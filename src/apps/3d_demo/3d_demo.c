@@ -223,13 +223,13 @@ void draw_3d_demo() {
     while ((vsync = gpio_get(17))) {};
 
     // this clear is fast enough to finish during vertical sync
-    clearRect(100, 25, 540, 474, BLACK);
+    clearRect(120, 50, 520, 449, BLACK);
 
     // 
     // draw the depth sorted faces from back to front
     for (int j = view.N_face - 1; j >= 0; j--) {
         int i = I[j];
-        int x1, y1, x2, y2;
+        int x0, y0, x1, y1, x2, y2;
         // ===== compute face normal for back-face culling
         Vsub( & view.vertex[view.face[i].v0], & view.vertex[view.face[i].v2], & temp1);
         Vsub( & view.vertex[view.face[i].v0], & view.vertex[view.face[i].v1], & temp2);
@@ -240,24 +240,24 @@ void draw_3d_demo() {
         if ((vzf[i] > 0)) {
             // the face fill // face toward camera
 
-            int check_x0 = s15x16_to_int(view.vertex[view.face[i].v0].x);
-            int check_y0 = s15x16_to_int(view.vertex[view.face[i].v0].y);
+            x0 = s15x16_to_int(view.vertex[view.face[i].v0].x);
+            y0 = s15x16_to_int(view.vertex[view.face[i].v0].y);
 
-            int check_x1 = s15x16_to_int(view.vertex[view.face[i].v1].x);
-            int check_y1 = s15x16_to_int(view.vertex[view.face[i].v1].y);
+            x1 = s15x16_to_int(view.vertex[view.face[i].v1].x);
+            y1 = s15x16_to_int(view.vertex[view.face[i].v1].y);
 
-            int check_x2 = s15x16_to_int(view.vertex[view.face[i].v2].x);
-            int check_y2 = s15x16_to_int(view.vertex[view.face[i].v2].y);
+            x2 = s15x16_to_int(view.vertex[view.face[i].v2].x);
+            y2 = s15x16_to_int(view.vertex[view.face[i].v2].y);
 
-            int height_min = 25;
-            int width_min = 100;
-            int height_max = 474;
-            int width_max = 540;
+            int height_min = 50;
+            int width_min = 120;
+            int height_max = 449;
+            int width_max = 520;
 
-            if (check_x0 < width_min || check_x1 < width_min || check_x2 < width_min) continue;
-            if (check_x0 > width_max || check_x1 > width_max || check_x2 > width_max) continue;
-            if (check_y0 < height_min || check_y1 < height_min || check_y2 < height_min) continue;
-            if (check_y0 > height_max && check_y1 > height_max && check_y2 > height_max) continue;
+            if (x0 < width_min || x1 < width_min || x2 < width_min) continue;
+            if (x0 > width_max || x1 > width_max || x2 > width_max) continue;
+            if (y0 < height_min || y1 < height_min || y2 < height_min) continue;
+            if (y0 > height_max && y1 > height_max && y2 > height_max) continue;
 
             if (face_visible < 0) {
                 fillTri(view.vertex[view.face[i].v0].x, view.vertex[view.face[i].v0].y,
@@ -265,26 +265,13 @@ void draw_3d_demo() {
                     view.vertex[view.face[i].v2].x, view.vertex[view.face[i].v2].y, view.color[i]);
 
                 // draw edges
-                x1 = s15x16_to_int(view.vertex[view.face[i].v0].x);
-                y1 = s15x16_to_int(view.vertex[view.face[i].v0].y);
-                x2 = s15x16_to_int(view.vertex[view.face[i].v1].x);
-                y2 = s15x16_to_int(view.vertex[view.face[i].v1].y);
-                drawLine(x1, y1, x2, y2, line_color);
+                drawLine(x0, y0, x1, y1, line_color);
                 // printf("%d %d %d %d\n\r", x1, y1, x2 ,y2) ;
 
-                x1 = s15x16_to_int(view.vertex[view.face[i].v2].x);
-                y1 = s15x16_to_int(view.vertex[view.face[i].v2].y);
-                x2 = s15x16_to_int(view.vertex[view.face[i].v1].x);
-                y2 = s15x16_to_int(view.vertex[view.face[i].v1].y);
-                drawLine(x1, y1, x2, y2, line_color);
+                drawLine(x2, y2, x1, y1, line_color);
                 //printf("%d %d %d %d\n\r", x1, y1, x2 ,y2) ;
 
-                x1 = s15x16_to_int(view.vertex[view.face[i].v0].x);
-                y1 = s15x16_to_int(view.vertex[view.face[i].v0].y);
-                x2 = s15x16_to_int(view.vertex[view.face[i].v2].x);
-                y2 = s15x16_to_int(view.vertex[view.face[i].v2].y);
-                drawLine(x1, y1, x2, y2, line_color);
-                //printf("%d %d %d %d\n\r", x1, y1, x2 ,y2) ;
+                drawLine(x0, y0, x2, y2, line_color);
             }
             // backface if CULL >=0
             else if ((view.backface_color[i] > CULL)) {
@@ -293,25 +280,13 @@ void draw_3d_demo() {
                     view.vertex[view.face[i].v1].x, view.vertex[view.face[i].v1].y,
                     view.vertex[view.face[i].v2].x, view.vertex[view.face[i].v2].y, view.backface_color[i]);
                 // draw edges
-                x1 = s15x16_to_int(view.vertex[view.face[i].v0].x);
-                y1 = s15x16_to_int(view.vertex[view.face[i].v0].y);
-                x2 = s15x16_to_int(view.vertex[view.face[i].v1].x);
-                y2 = s15x16_to_int(view.vertex[view.face[i].v1].y);
-                drawLine(x1, y1, x2, y2, line_color);
+                drawLine(x0, y0, x1, y1, line_color);
                 // printf("%d %d %d %d\n\r", x1, y1, x2 ,y2) ;
 
-                x1 = s15x16_to_int(view.vertex[view.face[i].v2].x);
-                y1 = s15x16_to_int(view.vertex[view.face[i].v2].y);
-                x2 = s15x16_to_int(view.vertex[view.face[i].v1].x);
-                y2 = s15x16_to_int(view.vertex[view.face[i].v1].y);
-                drawLine(x1, y1, x2, y2, line_color);
+                drawLine(x2, y2, x1, y1, line_color);
                 //printf("%d %d %d %d\n\r", x1, y1, x2 ,y2) ;
 
-                x1 = s15x16_to_int(view.vertex[view.face[i].v0].x);
-                y1 = s15x16_to_int(view.vertex[view.face[i].v0].y);
-                x2 = s15x16_to_int(view.vertex[view.face[i].v2].x);
-                y2 = s15x16_to_int(view.vertex[view.face[i].v2].y);
-                drawLine(x1, y1, x2, y2, line_color);
+                drawLine(x0, y0, x2, y2, line_color);
             }
         }
     }
